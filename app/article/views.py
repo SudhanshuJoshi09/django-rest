@@ -30,4 +30,17 @@ def article_detail(request, primary_key):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = ArticleSerializer()
+        serializer = ArticleSerializer(article)
+        return JsonResponse(serializer)
+    
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(article, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    
+    elif request.method == 'DELETE':
+        article.delete()
+        return HttpResponse(status=204)
